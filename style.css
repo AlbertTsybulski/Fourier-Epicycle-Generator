@@ -547,6 +547,36 @@ html, body {
   color: var(--text-dim);
 }
 
+/* ---- Formula ---- */
+.formula-panel {
+  min-width: 0;
+}
+.formula-description {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  margin: -4px 0 10px;
+}
+.formula-output {
+  max-height: 230px;
+  overflow: auto;
+  padding: 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  user-select: text;
+}
+.formula-panel .btn-export {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
 /* ---- Recording ---- */
 .recording-status {
   display: flex;

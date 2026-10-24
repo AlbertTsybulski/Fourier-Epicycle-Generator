@@ -1,6 +1,6 @@
 # Fourier Epicycle Generator
 
-A web app that decomposes SVG vector paths into complex Fourier series and visualizes them as animated epicycles — spinning circles and rotating vectors that trace out the shape in real time.
+A web app that decomposes SVG vector paths into complex Fourier series and visualizes them as animated epicycles, spinning circles and rotating vectors, that trace out the shape in real time.
 
 ## New Features & Enhancements
 

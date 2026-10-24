@@ -197,6 +197,25 @@
             <span class="toggle-slider"></span>
             <span class="toggle-label">Original Path (Ghost Guide)</span>
           </label>
+          <label class="toggle">
+            <input type="checkbox" id="showFormula">
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Path Formula</span>
+          </label>
+        </section>
+
+        <!-- Path Formula -->
+        <section class="panel formula-panel hidden" id="formulaPanel">
+          <h2 class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h16"/><path d="m17 9 3 3-3 3"/></svg>
+            Path Formula
+          </h2>
+          <p class="formula-description">Parametric Fourier approximation using the selected harmonics:</p>
+          <pre id="formulaOutput" class="formula-output" aria-live="polite">Load a path to generate its formula.</pre>
+          <button id="copyFormulaBtn" class="btn btn-export" type="button" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Formula
+          </button>
         </section>
 
         <!-- Export -->

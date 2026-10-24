@@ -30,6 +30,10 @@
   const showRadiiEl        = document.getElementById("showRadii");
   const showTrailEl        = document.getElementById("showTrail");
   const showOriginalEl     = document.getElementById("showOriginal");
+  const showFormulaEl      = document.getElementById("showFormula");
+  const formulaPanel       = document.getElementById("formulaPanel");
+  const formulaOutput      = document.getElementById("formulaOutput");
+  const copyFormulaBtn     = document.getElementById("copyFormulaBtn");
 
   const playPauseBtn       = document.getElementById("playPauseBtn");
   const playIcon           = document.getElementById("playIcon");
@@ -306,6 +310,63 @@
     return result;
   }
 
+  function formatFormulaNumber(value) {
+    const rounded = Math.abs(value) < 0.0000005 ? 0 : value;
+    return rounded.toFixed(4).replace(/\.?0+$/, "");
+  }
+
+  function formatFormulaTerm(value, unit) {
+    const magnitude = formatFormulaNumber(Math.abs(value));
+    if (magnitude === "0") return "";
+    const coefficient = magnitude === "1" ? "" : `${magnitude}·`;
+    return `${coefficient}${unit}`;
+  }
+
+  function buildFormula() {
+    if (!fourierCoeffs.length) {
+      formulaOutput.textContent = "Load a path to generate its formula.";
+      copyFormulaBtn.disabled = true;
+      return;
+    }
+
+    const coefficients = fourierCoeffs.slice(0, Math.min(numEpicycles, fourierCoeffs.length));
+    const xTerms = [];
+    const yTerms = [];
+
+    coefficients.forEach((coefficient) => {
+      const angle = coefficient.freq === 0 ? "" : `2π·${coefficient.freq}t`;
+      const cosTerm = formatFormulaTerm(coefficient.re, angle ? `cos(${angle})` : "1");
+      const sinTerm = formatFormulaTerm(coefficient.im, angle ? `sin(${angle})` : "0");
+
+      if (cosTerm) xTerms.push({ sign: coefficient.re < 0 ? "-" : "+", term: cosTerm });
+      if (sinTerm && coefficient.freq !== 0) {
+        xTerms.push({ sign: coefficient.im < 0 ? "+" : "-", term: sinTerm });
+      }
+
+      const ySinTerm = formatFormulaTerm(coefficient.re, angle ? `sin(${angle})` : "0");
+      const yCosTerm = formatFormulaTerm(coefficient.im, angle ? `cos(${angle})` : "1");
+      if (ySinTerm && coefficient.freq !== 0) {
+        yTerms.push({ sign: coefficient.re < 0 ? "-" : "+", term: ySinTerm });
+      }
+      if (yCosTerm) yTerms.push({ sign: coefficient.im < 0 ? "+" : "-", term: yCosTerm });
+    });
+
+    const renderTerms = (terms) => {
+      if (!terms.length) return "0";
+      const first = terms[0];
+      return (first.sign === "-" ? "-" : "") + first.term +
+        terms.slice(1).map(({ sign, term }) => ` ${sign} ${term}`).join("");
+    };
+
+    formulaOutput.textContent = [
+      `x(t) = ${renderTerms(xTerms)}`,
+      `y(t) = ${renderTerms(yTerms)}`,
+      "",
+      `0 ≤ t ≤ 1  ·  ${coefficients.length} harmonic${coefficients.length === 1 ? "" : "s"}`
+    ].join("\n");
+    copyFormulaBtn.disabled = false;
+  }
+
   // ────────────────── Epicycle Evaluation with Circles ───────────
   function evaluateEpicycles(t, nCoeffs) {
     const circles = [];
@@ -423,6 +484,7 @@
     // Compute Discrete Fourier Transform
     const harmonicsToCompute = Math.max(numSamples, numEpicycles);
     fourierCoeffs = computeDFT(sampledPoints, harmonicsToCompute);
+    buildFormula();
 
     // Enable sliders and inputs
     epicycleSlider.max = 10000;
@@ -454,6 +516,7 @@
       computeTransform(sampledPoints);
       const harmonicsToCompute = Math.max(numSamples, numEpicycles);
       fourierCoeffs = computeDFT(sampledPoints, harmonicsToCompute);
+      buildFormula();
       rebuildTrailTo(time);
       draw();
     } catch (e) {
@@ -791,6 +854,7 @@
     numEpicycles = parseInt(epicycleSlider.value, 10);
     epicycleInput.value = numEpicycles;
     rebuildTrailTo(time);
+    buildFormula();
     draw();
   });
 
@@ -801,6 +865,7 @@
     numEpicycles = val;
     epicycleSlider.value = val;
     rebuildTrailTo(time);
+    buildFormula();
     draw();
   });
 
@@ -812,6 +877,7 @@
     epicycleInput.value = val;
     epicycleSlider.value = val;
     rebuildTrailTo(time);
+    buildFormula();
     draw();
   });
 
@@ -895,6 +961,21 @@
   showRadiiEl.addEventListener("change",   () => { showRadii   = showRadiiEl.checked;   draw(); });
   showTrailEl.addEventListener("change",   () => { showTrail   = showTrailEl.checked;   draw(); });
   showOriginalEl.addEventListener("change", () => { showOriginal = showOriginalEl.checked; draw(); });
+  showFormulaEl.addEventListener("change", () => {
+    formulaPanel.classList.toggle("hidden", !showFormulaEl.checked);
+    if (showFormulaEl.checked) buildFormula();
+  });
+
+  copyFormulaBtn.addEventListener("click", async () => {
+    if (!formulaOutput.textContent || copyFormulaBtn.disabled) return;
+    try {
+      await navigator.clipboard.writeText(formulaOutput.textContent);
+      showToast("Formula copied to clipboard");
+    } catch (error) {
+      console.warn("Could not copy formula", error);
+      showToast("Copy failed — select the formula manually");
+    }
+  });
 
   // Playback Controls
   playPauseBtn.addEventListener("click", () => playing ? pause() : play());
