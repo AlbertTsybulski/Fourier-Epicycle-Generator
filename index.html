@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fourier Epicycle Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="14" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3"/>
+            <circle cx="16" cy="16" r="8" stroke="var(--accent)" stroke-width="1.5" opacity="0.6"/>
+            <circle cx="16" cy="16" r="3" fill="var(--accent)"/>
+          </svg>
+        </div>
+        <h1>Fourier Epicycles</h1>
+        <span class="header-tag">Vector Synthesizer</span>
+      </div>
+      <div class="header-right">
+        <button id="headerScreenshotBtn" class="btn btn-secondary btn-sm" title="Capture current canvas frame">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Screenshot
+        </button>
+        <a href="https://github.com/AlbertTsybulski/Fourier-Epicycle-Generator" target="_blank" class="github-link" title="View on GitHub">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+      </div>
+    </header>
+
+    <div class="main-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- SVG Path Input -->
+        <section class="panel">
+          <h2 class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            SVG Path Input
+          </h2>
+          <textarea id="pathInput" class="path-input" placeholder="Paste an SVG path d=&quot;...&quot; or raw &lt;svg&gt; markup here" spellcheck="false"></textarea>
+          <div class="input-actions">
+            <button id="loadPathBtn" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+              Load Path
+            </button>
+            <button id="loadSvgFileBtn" class="btn btn-secondary" title="Load from SVG file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Upload SVG
+            </button>
+            <input type="file" id="svgFileInput" accept=".svg,image/svg+xml" hidden>
+          </div>
+          <div class="preset-group">
+            <label class="label-small">Presets</label>
+            <div class="preset-buttons">
+              <button class="btn btn-ghost preset-btn" data-preset="heart"><span class="preset-icon">♥</span> Heart</button>
+              <button class="btn btn-ghost preset-btn" data-preset="batman"><span class="preset-icon">🦇</span> Bat</button>
+              <button class="btn btn-ghost preset-btn" data-preset="butterfly"><span class="preset-icon">🦋</span> Butterfly</button>
+              <button class="btn btn-ghost preset-btn" data-preset="treble"><span class="preset-icon">𝄞</span> Treble</button>
+              <button class="btn btn-ghost preset-btn" data-preset="star"><span class="preset-icon">★</span> Star</button>
+              <button class="btn btn-ghost preset-btn" data-preset="pi"><span class="preset-icon">π</span> Pi</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Theme & Accent Color -->
+        <section class="panel">
+          <h2 class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z"/><circle cx="12" cy="12" r="3.5"/></svg>
+            Accent Theme
+          </h2>
+          <div class="color-picker-box">
+            <div class="color-picker-row">
+              <label class="color-picker-label" for="accentColorPicker">
+                <span id="accentColorSwatch" class="color-swatch-circle" style="background-color: var(--accent);"></span>
+                <span class="color-picker-name">Color Accent</span>
+              </label>
+              <div class="color-inputs">
+                <input type="color" id="accentColorPicker" value="#818cf8" class="color-native-input">
+                <input type="text" id="accentHexInput" value="#818cf8" maxlength="7" spellcheck="false" class="color-hex-field">
+              </div>
+            </div>
+            <div class="palette-swatches">
+              <button class="palette-btn active" data-color="#818cf8" title="Indigo" style="--c: #818cf8"></button>
+              <button class="palette-btn" data-color="#06b6d4" title="Cyan" style="--c: #06b6d4"></button>
+              <button class="palette-btn" data-color="#10b981" title="Emerald" style="--c: #10b981"></button>
+              <button class="palette-btn" data-color="#f59e0b" title="Amber" style="--c: #f59e0b"></button>
+              <button class="palette-btn" data-color="#f43f5e" title="Rose" style="--c: #f43f5e"></button>
+              <button class="palette-btn" data-color="#d946ef" title="Fuchsia" style="--c: #d946ef"></button>
+              <button class="palette-btn" data-color="#3b82f6" title="Blue" style="--c: #3b82f6"></button>
+              <button class="palette-btn" data-color="#e2e8f0" title="Platinum" style="--c: #e2e8f0"></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Controls -->
+        <section class="panel">
+          <h2 class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Controls
+          </h2>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="epicycleValue">Epicycles (Harmonics)</label>
+              <input type="number" id="epicycleValue" class="control-input" min="1" max="10000" value="1000">
+            </div>
+            <input type="range" id="epicycleCount" min="1" max="10000" value="1000" class="slider">
+            <div class="slider-labels">
+              <span>1</span>
+              <span>5000</span>
+              <span>10000</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="speedValue">Animation Speed</label>
+              <div class="control-input-wrapper">
+                <input type="number" id="speedValue" class="control-input" min="0.1" max="10" step="0.1" value="1.0">
+                <span class="input-unit">×</span>
+              </div>
+            </div>
+            <input type="range" id="speedSlider" min="0.1" max="5" value="1" step="0.1" class="slider">
+            <div class="slider-labels">
+              <span>0.1×</span>
+              <span>1.0×</span>
+              <span>2.0×</span>
+              <span>3.0×</span>
+              <span>4.0×</span>
+              <span>5.0×</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="sampleValue">Path Detail Samples</label>
+              <input type="number" id="sampleValue" class="control-input" min="200" max="10000" step="100" value="2000">
+            </div>
+            <input type="range" id="sampleSlider" min="200" max="10000" value="2000" step="100" class="slider">
+            <div class="slider-labels">
+              <span>200</span>
+              <span>5000</span>
+              <span>10000</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="trailValue">Trail Length</label>
+              <div class="control-input-wrapper">
+                <input type="number" id="trailValue" class="control-input" min="5" max="100" step="1" value="100">
+                <span class="input-unit">%</span>
+              </div>
+            </div>
+            <input type="range" id="trailSlider" min="5" max="100" value="100" class="slider">
+            <div class="slider-labels">
+              <span>5%</span>
+              <span>50%</span>
+              <span>Full (100%)</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Display Options -->
+        <section class="panel">
+          <h2 class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Display Layers
+          </h2>
+          <label class="toggle">
+            <input type="checkbox" id="showCircles" checked>
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Epicycle Circles</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="showRadii" checked>
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Connecting Radii</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="showTrail" checked>
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Drawing Trail</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="showOriginal">
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Original Path (Ghost Guide)</span>
+          </label>
+        </section>
+
+        <!-- Export -->
+        <section class="panel">
+          <h2 class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export & Capture
+          </h2>
+          <button id="screenshotBtn" class="btn btn-export btn-highlight" disabled title="Capture the canvas at the exact current moment">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Take Screenshot (Current Frame)
+          </button>
+          <button id="downloadImageBtn" class="btn btn-export" disabled title="Download the fully drawn 100% path with epicycles">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Download Full Sketch (PNG)
+          </button>
+          <button id="recordVideoBtn" class="btn btn-export" disabled title="Record 1 full cycle as video">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            Record Full Animation (WebM)
+          </button>
+          <div id="recordingStatus" class="recording-status hidden">
+            <div class="recording-dot"></div>
+            <span>Recording Cycle… <span id="recordProgress">0</span>%</span>
+          </div>
+        </section>
+      </aside>
+
+      <!-- Canvas Area -->
+      <main class="canvas-area">
+        <div class="canvas-container" id="canvasContainer">
+          <canvas id="mainCanvas"></canvas>
+          <div class="canvas-overlay" id="canvasOverlay">
+            <div class="overlay-content">
+              <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="28" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.4"/>
+                <circle cx="32" cy="32" r="16" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="4 3" opacity="0.3"/>
+                <circle cx="32" cy="32" r="4" fill="var(--text-muted)" opacity="0.3"/>
+              </svg>
+              <p>Paste an SVG path or select a preset to generate epicycles</p>
+            </div>
+          </div>
+          <!-- Toast notification -->
+          <div id="toast" class="toast hidden"></div>
+        </div>
+
+        <!-- Playback Controls -->
+        <div class="playback-bar" id="playbackBar">
+          <button id="playPauseBtn" class="btn btn-icon" title="Play / Pause (Space)">
+            <svg id="playIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg id="pauseIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="hidden"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+          <button id="restartBtn" class="btn btn-icon" title="Restart Animation (R)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          </button>
+          <button id="quickScreenshotBtn" class="btn btn-icon" title="Take Screenshot (S)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </button>
+          <div class="progress-container">
+            <input type="range" id="progressSlider" class="progress-slider" min="0" max="1000" value="0">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <span id="timeDisplay" class="time-display">0.0%</span>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="fourier.js"></script>
+</body>
+</html>
